@@ -3,9 +3,11 @@ import os
 import random
 import time
 
-
+print()
 DEFAULT_HEALTH = 4
 dir_path = os.path.dirname(os.path.realpath(__file__))
+
+rounds = 0
 
 gun_side = open(os.path.join(dir_path,'gun-side.txt'),'r').read()
 gun_fwd = open(os.path.join(dir_path,'gun-forwards.txt'),'r').read()
@@ -16,9 +18,8 @@ live_round = open(os.path.join(dir_path,'live-round.txt'),'r').read().splitlines
 
 def displayList(arr):
     for i,s in enumerate(arr):
-        time.sleep(0.6)
+        time.sleep(0.1)
         print(f"{i+1}) {s}")
-    print()
 
 def displayRounds(live,blank,space=2):
     s = ""
@@ -97,38 +98,34 @@ class Player():
         temp = self.items
         temp.remove(item)
         self.items = temp
+        print(f"[{name}] USED:",item)
         time.sleep(1)
         match item:
             case '🔪':
                 gun.doubleDamage()
-                print("Gun now does 2 damage.")
+                print("Shotgun now does 2 damage.")
 
             case '🔍':
                 print("Shhhh~~~")
-                time.sleep(0.8)
+                time.sleep(1)
                 print(".. The next round is..")
-                time.sleep(1)
-                print()
-                time.sleep(1)
+                time.sleep(2)
                 print(["blank.", "LIVE."][gun.rounds[-1]])
-                time.sleep(0.5)
+                time.sleep(1)
                 print("~~~~~~~~~~")
 
             case '⛓':
                 if not effector: return False
                 effector.missTurns(1)
-                print("The Dealer will now miss a turn.")
+                print("Dealer will now miss a turn.")
             
             case '🍺':
-                print("gun has been racked.")
+                print("Shotgun has been racked.")
                 r = gun.pickRound()
                 time.sleep(1)
                 print("Round was..")
-                time.sleep(0.7)
-                print()
-                time.sleep(0.7)
+                time.sleep(1.5)
                 print(["blank.","LIVE."][r])
-                print()
 
             case '🚬':
                 self.addHealth()
@@ -136,7 +133,7 @@ class Player():
 
             case _:
                 print("uhm....")
-                time.sleep(2.7)
+                time.sleep(3)
                 print("Game does not recognise the item.")
                 return False
         time.sleep(1)
@@ -156,38 +153,35 @@ class AI(Player):
         temp.remove(item)
         self.items = temp
 
-        print("Dealer is using item..")
-        time.sleep(0.8)
-        print()
-        time.sleep(0.8)
+        print("[DEALER] used",item)
+        time.sleep(1.5)
 
         match item:
             case '⛓':
                 effector.missTurns()
-                print("Dealer has cuffed you.")
+                print("[DEALER] cuffed you.")
             case '🔪':
                 gun.doubleDamage()
-                print("Dealer has used 🔪.")
                 time.sleep(0.7)
                 print("Shotgun now does 2 damage.")
             case '🚬':
                 self.addHealth()
-                print("Dealer used 🚬.")
                 time.sleep(0.7)
-                print("Dealer now has",self.health,"lives left.")
+                print("[DEALER] now has",self.health,"lives.")
             case '🍺':
-                print("gun has been racked.")
+                print("Gun has been racked.")
                 r = gun.pickRound()
                 time.sleep(0.5)
-                print("Round was..")
+                print("THE ROUND IS..")
                 time.sleep(0.7)
                 print()
                 time.sleep(0.7)
                 print(["blank.","LIVE."][r])
             case '🔍':
                 r = gun.rounds[-1]
-                print("Dealer has inspected the gun.")
+                print("[DEALER] has inspected the gun 🔍...")
                 time.sleep(1)
+                print("##############################",r)
                 if r:
                     self.useItem('🔪',gun=gun)
                     self.shoot(gun,effector)
@@ -195,7 +189,6 @@ class AI(Player):
                 self.shoot(gun)
                 return True
                 
-        print()
         time.sleep(1)
         return True
 
@@ -206,15 +199,20 @@ class AI(Player):
             print("\n",gun_back,"\n")
             time.sleep(2.3)
             if r:
+                if effector.health - gun.damage < 1:
+                    time.sleep(2)
+                    
                 effector.takeDamage(gun.damage)
                 print("\n",explosion,"\n")
-                print("BOOM")
-                time.sleep(0.8)
-                print("You got shot.")
-                time.sleep(1.4)
-                print("Lives left:", p1.health)
-                time.sleep(3)
-                gun.resetDamage()
+
+                if effector.health > 0:
+                    print("BOOM")
+                    time.sleep(0.8)
+                    print("You got shot.")
+                    time.sleep(1.4)
+                    print("Lives left:", effector.health)
+                    time.sleep(3)
+                    gun.resetDamage()
                 return
         else:
             print("\n",gun_fwd,"\n")
@@ -234,7 +232,6 @@ class AI(Player):
         time.sleep(0.8)
         print("round was blank.")
         time.sleep(1.5)
-        print()
         gun.resetDamage()
 
 
@@ -244,11 +241,24 @@ dealer = AI(DEFAULT_HEALTH)
 
 time.sleep(1)
 
-print("Type 'help' for help/instructions, otherwise ignore.")
-askforhelp = input(">>> ").lower().strip(" ")
-if askforhelp == "help":
+print("[DEALER]: PLEASE SIGN THE WAIVER.")
+askforhelp = ''
+
+while askforhelp not in ["a","b"]:
+    askforhelp = input("(a) Read Waiver or (b) Sign and continue? ").lower().strip(" ")
+
+if askforhelp == "a":
     displayHelp()
-    input("Ready? ")
+    input("READY? ")
+
+name = ""
+while name in ["GOD","DEALER","SATAN"] or not (3 < len(name) < 10):
+    if name:
+        print("INVALID NAME.")
+    name = input("ENTER NAME: ").strip(" ").upper()
+
+
+
 
 while p1.health > 0 and dealer.health > 0:
     # load the shotgun
@@ -256,25 +266,26 @@ while p1.health > 0 and dealer.health > 0:
     blank =  random.randint(1,3)
     sg.addRounds(live, blank)
     print("\n",gun_side)
-    time.sleep(1)
     displayRounds(live,blank)
     time.sleep(0.5)
-    print(f"The gun has {live+blank} bullets - {live} live, {blank} blank\n")
-    time.sleep(1.8)
-    input("Continue? ")
+    print(f"{live} LIVE, {blank} BLANK\n")
+    time.sleep(4)
+
+    if not rounds:
+        print("\"I INSERT THE SHELLS IN AN UNKNOWN ORDER.\"")
+    else:
+        print("\"THEY ENTER THE CHAMBER IN A HIDDEN SEQUENCE.\"")
+    time.sleep(4)
     
     #give the players items
     p1.addRandomItems()
     dealer.addRandomItems()
-    print()
-    print("Your inventory:")
-    time.sleep(0.5)
+    print("\nYour inventory:")
     displayList(p1.items)
-    time.sleep(2)
-    print("Dealers inventory:")
-    time.sleep(0.5)
+    time.sleep(4)
+    print("\nDealer's inventory:")
     displayList(dealer.items)
-    time.sleep(1)
+    time.sleep(3)
     
     #start turns
     turn = random.choice([True,False])
@@ -288,35 +299,27 @@ while p1.health > 0 and dealer.health > 0:
             inp = ""
 
             if dealer.turnsWaiting:
-                print("*Dealer skips his turn*")
+                print("\n*Dealer skips their turn*")
                 turn = not turn
                 time.sleep(0.5)
-                print()
                 dealer.turnsWaiting = dealer.turnsWaiting - 1
             
             while sg.rounds:
                 opt = ""
 
                 if p1.items:
-                    print("+==============+")
-                    time.sleep(0.4)
+                    print("\n+==============+")
                     print("Your items:")
-                    time.sleep(0.3)
                     displayList(p1.items)
                     print("+==============+")
-                    time.sleep(0.4)
-                    print("It is your turn.")
                     time.sleep(1)
+                    print("\nIT IS YOUR TURN.")
                     print("(a) Use item")
-                    time.sleep(0.5)
                     print("(b) Shoot")
-                    time.sleep(0.5)
 
                     while opt.lower().strip(" ") not in ["a","b"]:
                         opt = input(" ").lower().strip(" ")
 
-                    print()
-                    time.sleep(0.5)
                 #endif
 
                 if opt == "a": # ======== > PLAYER USE ITEM
@@ -332,13 +335,12 @@ while p1.health > 0 and dealer.health > 0:
                     time.sleep(1)
 
                 else: # ============= > PLAYER SHOOT
-                    print("Shooting yourself will skip dealers turn if round is blank.")
-                    time.sleep(0.7)
+                    print("\nShooting yourself will skip Dealer's turn if round is blank.\n")
                     print("Shoot:")
-                    time.sleep(0.5)
-                    print("(a) Dealer")
-                    time.sleep(0.5)
-                    print("(b) You")
+                    time.sleep(0.6)
+                    print("(a) DEALER")
+                    time.sleep(0.6)
+                    print("(b) YOU")
                     inp = ""
 
                     while inp not in ["a","b","back","q","quit","x"]:
@@ -350,13 +352,13 @@ while p1.health > 0 and dealer.health > 0:
                     if inp == "a": # shoot DEALER
                         r = sg.pickRound()
                         print("\n",gun_fwd,"\n")
-                        time.sleep(1.4)
+                        time.sleep(1.8)
                         if r:
                             dealer.takeDamage(sg.damage)
                             print("\n",explosion,"\n")
                             time.sleep(0.5)
-                            print("Dealer was shot.")
-                            print("Dealer health:", dealer.health)
+                            print("[DEALER] was shot.")
+                            print("Dealers health:", dealer.health)
                             time.sleep(1.2)
                         else:
                             print("*click*")
@@ -369,13 +371,16 @@ while p1.health > 0 and dealer.health > 0:
                         r = sg.pickRound()
                         print("\n",gun_back,"\n")
                         time.sleep(2.5)
+                        if p1.health - sg.damage < 1:
+                            time.sleep(2)
                         if r:
                             p1.takeDamage(sg.damage)
                             print("\n",explosion,"\n")
-                            time.sleep(0.5)
-                            print("You got shot.")
-                            print("Your health:", p1.health)
-                            time.sleep(1.2)
+                            if p1.health > 0 :
+                                time.sleep(0.5)
+                                print("You got shot.")
+                                print(f"YOUR HEALTH:", p1.health)
+                                time.sleep(1.2)
                             break
                         else:
                             print("*click*")
@@ -386,22 +391,20 @@ while p1.health > 0 and dealer.health > 0:
                     
         else: #DEALERS turn
             if p1.turnsWaiting:
-                print("You skip this turn.")
+                print("\nYou skip this turn.")
                 turn = not turn
-                time.sleep(0.6)
-                print()
-                time.sleep(0.6)
+                time.sleep(1.5)
                 p1.turnsWaiting = p1.turnsWaiting - 1
 
-            print("DEALERS TURN.")
-            time.sleep(1)
+            print("\nDEALERS TURN.")
+            time.sleep(2)
 
             while sg.rounds:
                 r = sg.rounds[-1]
 
                 # BEGIN AI DECIDING
-                print("Dealer is chosing...")
-                time.sleep(random.randint(5,25)/10)
+                print("[DEALER] is chosing...")
+                time.sleep(random.randint(15,45)/10)
                 
                 if False not in sg.rounds:
                     dealer.useItem('🔪',gun=sg)
@@ -444,19 +447,20 @@ while p1.health > 0 and dealer.health > 0:
 
     sg.resetDamage()
     p1.turnsWaiting = 0
+    rounds +=1
     dealer.turnsWaiting = 0
     if p1.health > 0 and dealer.health > 0:
         print("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~")
         print("..NEXT ROUND..")
+        time.sleep(2)
+        print("DEALER'S HEALTH:")
         time.sleep(1)
-        print("Dealers Health:")
-        time.sleep(0.5)
         print(dealer.health)
-        time.sleep(0.5)
-        print("Your health:")
-        time.sleep(0.5)
+        time.sleep(2)
+        print("YOUR HEALTH:")
+        time.sleep(1)
         print(p1.health)
-        time.sleep(0.5)
+        time.sleep(2)
 
 
 
@@ -466,7 +470,7 @@ while c < 700000:
     print("█",end="")
 
 if not dealer.health:
-    print("\n\n\n\nDealer dies.")
-    print("You win.")
+    print("\n\n\n\nThe dealer died.")
+    print("You win..")
 else:
-    print("\n\n\n\nYou died.")
+    print("\n\n\n\nYOU DIED.")
