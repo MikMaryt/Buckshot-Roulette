@@ -475,7 +475,7 @@ while c < 700000:
     print("█",end="")
 
 if not dealer.health:
-    print("\n\n\n\nThe dealer died.")
+    print("\n\n\n\nThe dealer lost.")
     print("You win..")
 else:
     print("\n\n\n\nYOU DIED.")
