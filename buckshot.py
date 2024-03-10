@@ -1,6 +1,7 @@
 #Buckshot roulette
 import os
 import random
+import sys
 import time
 
 print()
@@ -250,6 +251,12 @@ sleep(1)
 
 print("[DEALER]: PLEASE SIGN THE WAIVER.")
 askforhelp = ''
+name = ''
+if len(sys.argv) > 1:
+    name = sys.argv[1]
+    if name:
+        print(f"NAME: {name}")
+        askforhelp = "b"
 
 while askforhelp not in ["a","b"]:
     askforhelp = input("(a) Read Waiver or (b) Sign and continue? ").lower().strip(" ")
@@ -258,7 +265,6 @@ if askforhelp == "a":
     displayHelp()
     input("READY? ")
 
-name = ""
 while name in ["GOD","DEALER","SATAN"] or not (3 < len(name) < 10):
     if name:
         print("INVALID NAME.")
