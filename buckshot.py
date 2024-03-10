@@ -93,7 +93,7 @@ class Player():
     
     def addRandomItems(self,n=None):
         if not n:
-            n = random.randint(1,4)
+            n = random.choice([1, 1, 2, 2, 2, 3, 3, 4])
         n = min(8 - len(self.items), n)
         items = ["⛓","🔪","🍺","🚬","🔍"]
         self.items += [random.choice(items) for _ in range(n)]
@@ -286,7 +286,7 @@ while p1.health > 0 and dealer.health > 0:
     sleep(4)
     
     #give the players items
-    nitems = random.randint(1,4)
+    nitems = random.choice([1, 1, 2, 2, 2, 3, 3, 4])
     p1.addRandomItems(nitems)
     dealer.addRandomItems(nitems)
     print("\nYour inventory:")
