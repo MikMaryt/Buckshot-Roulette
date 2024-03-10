@@ -83,6 +83,7 @@ class Player():
         
     def takeDamage(self,dmg=1):
         self.health = self.health - dmg
+        self.health = max(0, self.health)
         return (not self.health)
     
     def addHealth(self,health=1):
