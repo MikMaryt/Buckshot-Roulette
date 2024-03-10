@@ -76,8 +76,10 @@ class Shotgun():
         return self.rounds.pop()
     
 class Player():
-    def __init__(self,health=DEFAULT_HEALTH,items=[]):
+    def __init__(self,health=DEFAULT_HEALTH,items=None):
         self.health = health
+        if items is None:
+            items = []
         self.items = items
         self.turnsWaiting = 0
         
