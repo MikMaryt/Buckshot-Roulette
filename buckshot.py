@@ -97,6 +97,7 @@ class Player():
         n = min(8 - len(self.items), n)
         items = ["⛓","🔪","🍺","🚬","🔍"]
         self.items += [random.choice(items) for _ in range(n)]
+        self.items.sort()
             
     def useItem(self,item, gun, effector):
         if not item in self.items:
