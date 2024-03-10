@@ -422,7 +422,7 @@ while p1.health > 0 and dealer.health > 0:
                 if roundsLeft < 5:
                     if (sg.rounds.count(True)/roundsLeft) >= 0.5:
                         if dealer.useItem('⛓',p1): continue
-                        if not p1.turnsWaiting and dealer.useItem('🔍',gun=sg): continue
+                        if not p1.turnsWaiting and dealer.useItem('🔍',p1,sg): continue
                         if random.choice(sg.rounds) and dealer.useItem('🔪',gun=sg): continue
                         
                         dealer.shoot(sg,p1)
