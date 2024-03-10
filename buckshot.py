@@ -71,9 +71,7 @@ class Shotgun():
         random.shuffle(self.rounds)
             
     def pickRound(self):
-        l = len(self.rounds)
-        if not l: return
-        return self.rounds.pop()
+        return self.rounds.pop() if self.rounds else None
     
 class Player():
     def __init__(self,health=DEFAULT_HEALTH,items=None):
