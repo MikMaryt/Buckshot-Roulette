@@ -284,8 +284,9 @@ while p1.health > 0 and dealer.health > 0:
     sleep(4)
     
     #give the players items
-    p1.addRandomItems()
-    dealer.addRandomItems()
+    nitems = random.randint(1,4)
+    p1.addRandomItems(nitems)
+    dealer.addRandomItems(nitems)
     print("\nYour inventory:")
     displayList(p1.items)
     sleep(3)
