@@ -94,8 +94,9 @@ class Player():
     def addRandomItems(self,n=None):
         if not n:
             n = random.randint(1,4)
+        n = min(8 - len(self.items), n)
         items = ["⛓","🔪","🍺","🚬","🔍"]
-        self.items = [items[random.randint(0,4)] for _ in range(n)]
+        self.items += [random.choice(items) for _ in range(n)]
             
     def useItem(self,item, gun, effector):
         if not item in self.items:
