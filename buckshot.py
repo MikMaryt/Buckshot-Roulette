@@ -75,6 +75,7 @@ class Shotgun():
     
 class Player():
     def __init__(self,health=DEFAULT_HEALTH,items=None):
+        self.max_health = health
         self.health = health
         if items is None:
             items = []
@@ -88,6 +89,7 @@ class Player():
     
     def addHealth(self,health=1):
         self.health = self.health +health
+        self.health = min(self.max_health, self.health)
     
     def addRandomItems(self,n=None):
         if not n:
