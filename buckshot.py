@@ -189,7 +189,7 @@ class AI(Player):
                 r = gun.rounds[-1]
                 print("[DEALER] has inspected the gun 🔍...")
                 time.sleep(1)
-                print("##############################",r)
+                # print("##############################",r)
                 if r:
                     self.useItem('🔪',gun=gun)
                     self.shoot(gun,effector)
