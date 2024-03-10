@@ -199,14 +199,14 @@ class AI(Player):
         r = gun.pickRound()
 
         if effector:
-            print("\n",gun_back,"\n")
+            print(f"\n{gun_back}\n")
             sleep(2.3)
             if r:
                 if effector.health - gun.damage < 1:
                     sleep(2)
                     
                 effector.takeDamage(gun.damage)
-                print("\n",explosion,"\n")
+                print(f"\n{explosion}\n")
 
                 if effector.health > 0:
                     print("BOOM")
@@ -218,11 +218,11 @@ class AI(Player):
                     gun.resetDamage()
                 return
         else:
-            print("\n",gun_fwd,"\n")
+            print(f"\n{gun_fwd}\n")
             sleep(2)
             if r:
                 self.takeDamage(1)
-                print("\n",explosion,"\n")
+                print(f"\n{explosion}\n")
                 print("BOOM")
                 sleep(0.5)
                 print("Dealer was shot.")
@@ -268,7 +268,7 @@ while p1.health > 0 and dealer.health > 0:
     live = random.randint(1,3)
     blank =  random.randint(1,3)
     sg.addRounds(live, blank)
-    print("\n",gun_side)
+    print(f"\n{gun_side}")
     displayRounds(live,blank)
     time.sleep(0.5)
     print(f"{live} LIVE, {blank} BLANK\n")
@@ -354,11 +354,11 @@ while p1.health > 0 and dealer.health > 0:
                     
                     if inp == "a": # shoot DEALER
                         r = sg.pickRound()
-                        print("\n",gun_fwd,"\n")
+                        print(f"\n{gun_fwd}\n")
                         sleep(1.8)
                         if r:
                             dealer.takeDamage(sg.damage)
-                            print("\n",explosion,"\n")
+                            print(f"\n{explosion}\n")
                             sleep(0.5)
                             print("[DEALER] was shot.")
                             print("Dealers health:", dealer.health)
@@ -372,13 +372,13 @@ while p1.health > 0 and dealer.health > 0:
                         break
                     elif inp == "b": # shoot YOURSELF
                         r = sg.pickRound()
-                        print("\n",gun_back,"\n")
+                        print(f"\n{gun_back}\n")
                         sleep(2.5)
                         if p1.health - sg.damage < 1:
                             sleep(2)
                         if r:
                             p1.takeDamage(sg.damage)
-                            print("\n",explosion,"\n")
+                            print(f"\n{explosion}\n")
                             if p1.health > 0 :
                                 sleep(0.5)
                                 print("You got shot.")
