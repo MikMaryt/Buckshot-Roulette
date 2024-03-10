@@ -435,7 +435,7 @@ while p1.health > 0 and dealer.health > 0:
                     
                 
                 # ⛓, mag.g, knf, cg, 🍺
-                if random.choice([True,False]):
+                if dealer.items and random.choice([True,False]):
                     dealer.useItem(random.choice(dealer.items),p1,sg)
                     continue
 
