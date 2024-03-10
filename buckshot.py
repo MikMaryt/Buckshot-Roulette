@@ -44,7 +44,6 @@ def displayHelp():
     print("    - You and 'The Dealer' will take turns shooting.")
     print("    - Aim at The Dealer or at yourself - shooting yourself with a blank skips the Dealers turn.")
     print("    - Participants are given items to help out. Use them wisely.")
-    print("    - if you have chosen wrongly, type 'q'/'quit'/'back' to go back.")
     print()
     print("ITEMS:")
     print("    • 🚬 = Gives the user an extra life.")
@@ -304,9 +303,6 @@ while p1.health > 0 and dealer.health > 0:
         
         if (turn and (not p1.turnsWaiting)) or dealer.turnsWaiting:
             # =========> PLAYERS TURN TO CHOOSE
-            opt = ""
-            inp = ""
-
             if dealer.turnsWaiting:
                 print("\n*Dealer skips their turn*")
                 turn = not turn
@@ -315,6 +311,7 @@ while p1.health > 0 and dealer.health > 0:
             
             while sg.rounds:
                 opt = ""
+                inp = None
 
                 if p1.items:
                     print("\n+==============+")
@@ -322,43 +319,31 @@ while p1.health > 0 and dealer.health > 0:
                     displayList(p1.items)
                     print("+==============+")
                     sleep(1)
-                    print("\nIT IS YOUR TURN.")
-                    print("(a) Use item")
-                    print("(b) Shoot")
 
-                    while opt.lower().strip(" ") not in ["a","b"]:
-                        opt = input(" ").lower().strip(" ")
+                print("\nIT IS YOUR TURN.")
+                print("(#) Use item")
+                print("(a) Shoot DEALER")
+                print("(b) Shoot YOU")
+
+                while True:
+                    inp = None
+                    opt = input(" ").lower().strip(" ")
+                    if opt in ["a","b"]:
+                        break
+                    if opt.isdigit() and 0 < (inp := int(opt)) <= len(p1.items):
+                        break
 
                 #endif
 
-                if opt == "a": # ======== > PLAYER USE ITEM
-                    inp = ""
-                    while (not inp.isdigit() or int(inp) < 1 or int(inp) > len(p1.items)) and inp not in ["quit","q","back","x"]:
-                        inp = input("Use: ")
-                        
-                    if inp not in ["quit","q","back","x"]:
-                        use = p1.useItem(p1.items[int(inp)-1],sg,dealer)
-                        
-                        if not use:
-                            print(inp,"not used.\n\n\n\n")
+                if inp is not None: # ======== > PLAYER USE ITEM
+                    if not p1.useItem(p1.items[inp-1],sg,dealer):
+                        print(inp,"not used.\n\n\n\n")
                     sleep(1)
 
                 else: # ============= > PLAYER SHOOT
-                    print("\nShooting yourself will skip Dealer's turn if round is blank.\n")
-                    print("Shoot:")
-                    sleep(0.6)
-                    print("(a) DEALER")
-                    sleep(0.6)
-                    print("(b) YOU")
-                    inp = ""
-
-                    while inp not in ["a","b","back","q","quit","x"]:
-                        inp = input(" ").lower().strip(" ")
-
-                    
                     sleep(0.5)
                     
-                    if inp == "a": # shoot DEALER
+                    if opt == "a": # shoot DEALER
                         r = sg.pickRound()
                         print(f"\n{gun_fwd}\n")
                         sleep(1.8)
@@ -376,7 +361,7 @@ while p1.health > 0 and dealer.health > 0:
                             sleep(0.5)
                             print()
                         break
-                    elif inp == "b": # shoot YOURSELF
+                    elif opt == "b": # shoot YOURSELF
                         r = sg.pickRound()
                         print(f"\n{gun_back}\n")
                         sleep(2.5)
